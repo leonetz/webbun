@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Sarabun', sans-serif;
+}
+
+.nav-bar-link {
+  @apply hover:bg-white hover:text-red-600 rounded-lg transition duration-100;
+}
+
+.content {
+  @apply  w-full p-8  bg-gray-100; 
+}
+
+.contentInfo {
+  @apply bg-white w-full h-full p-5 rounded-md shadow-md;
+}
+
+.headerPage {
+  @apply text-[22px];
+}
+
+.table {
+  @apply w-full ;
+}
+
+.table th {
+  @apply bg-red-600 text-white text-sm text-center border-0 ;
+}
+
+
+.table {
+  @apply w-full  /* เส้นขอบตาราง */
+}
+
+
+.table th:first-child {
+  @apply rounded-tl-2xl;
+}
+
+.table th:last-child {
+  @apply rounded-tr-2xl;
+}
+
+.table th {
+  @apply border-r border-gray-200 p-4;
+}
+
+.table td {
+  @apply  border-l border-gray-200 border-b p-2 ;
+}
+
+.table th:last-child,
+.table td:last-child {
+  @apply border-r-0; /* เอาเส้นขอบขวาของคอลัมน์สุดท้ายออก */
+}
+
+/* เพิ่มเส้นขอบขวาที่คอลัมน์สุดท้าย */
+.table td:last-child {
+  @apply border-r border-gray-200;
+}
+
+.table tr:nth-child(even) {
+  @apply bg-gray-100; /* กำหนดสีพื้นหลังให้กับแถวคู่ */
+}
+
+.table tr:nth-child(odd) {
+  @apply bg-white; /* กำหนดสีพื้นหลังให้กับแถวคี่ */
+}
+
+.modalInput {
+  @apply p-2 border-2 border-gray-300 rounded-lg w-full text-sm my-2;
+}
+
+.linkActive {
+  @apply bg-red-600 text-white p-2.5 rounded-md w-28;
+}
+
+.linkNonActive {
+  @apply bg-gray-200 p-2.5 rounded-md w-28;
+}
+
+.btnsave {
+  @apply bg-green-500 text-white px-3 py-2 rounded-md transition-all duration-200 hover:bg-green-600 active:scale-95;
+}
