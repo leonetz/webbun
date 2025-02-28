@@ -6,157 +6,136 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Modal from "@/app/components/modal";
 import dayjs from "dayjs";
+import Link from "next/link";
+
 
 export default function Page () {
+    const [repairRecords, setRepairRecords] = useState([]);
     const [devices, setDevices] = useState([]);
-    const [repairRecords, SetRepairRecords] = useState([]);
 
-    const [showModal, setShowModal] = useState(false);
-    const [customerName, setCustomerName] = useState("");
-    const [customerPhone, setCustomerPhone] = useState("");
-    const [deviceName, setDeviceName] = useState("");
-    const [deviceBarcode, setDeviceBarcode] = useState("");
-    const [deviceSerial, setDeviceSerial] = useState("");
-    const [problem, setProblem] = useState("");
-    const [deviceId, setDeviceId] = useState("");
-    const [expairDate, setExpairDate] = useState("");
-
-    useEffect(() => {
-        fetchDevices();
-    }, []);
+    //รับเครื่อง
+    const [showModalReceive, setModalReceive] = useState(true);
+    const [receiveCustomerName, setReceiveCustomerName] = useState("");
+    const [receiveAmount, setReceiveAmount] = useState(0);
+    const [receiveId, setReceiveId] = useState("");
 
     const fetchDevices = async () => {
-        const  response = await axios.get(`${config.apiUrl}/api/device/list`);
+        const response = await axios.get(`${config.apiUrl}/api/device/list`);
         setDevices(response.data);
     }
 
+    const fetchRepairRecords = async () => {
+        const response = await axios.get(`${config.apiUrl}/api/repairRecords/list`);
+        setRepairRecords(response.data);
+    }
+
     const handleCloseModal = () => {
-        setShowModal(false);
+        setModalReceive(false);
     }
 
     const handleShowModal = () => {
-        setShowModal(true);
+        setModalReceive(true)
     }
 
-    const handleDeviceChange = (deviceId: string) => {
-        const device = (devices as any).find((device: any) => device.id === parseInt(deviceId));
-        
-        if(device) {
-            setDeviceId(device.id);
-            setDeviceName(device.name);
-            setDeviceBarcode(device.barcode);
-            setDeviceSerial(device.serial);
-            setExpairDate(dayjs(device.expireDate).format("YYYY-MM-DD"));
-        } else {
-            setDeviceId("");
-            setDeviceName("");
-            setDeviceBarcode("");
-            setDeviceSerial("");
-            setExpairDate("");
+
+    useEffect(() => {
+        fetchDevices();
+        fetchRepairRecords();
+    }, []);
+
+    const getStatusName = (status : string) => {
+        switch (status) {
+            case "active":
+                return "รอซ่อม";
+            case "pending":
+                return "รอลูกค้ายืนยัน";
+            case "repairing":
+                return "กำลังซ่อม";
+            case "done":
+                return "ซ่อมเสร็จ";
+            case "cancel":
+                return "ยกเลิก";
+            case "complete":
+                return "ลูกค้ามารับอุปกรณ์"
+            default :
+                return "รอซ่อม";
         }
     }
 
-    const handleSave = async () => {
-        const payload = {
-            customerName: customerName,
-            customerPhone: customerPhone,
-            deviceId: deviceId,
-            deviceName: deviceName,
-            deviceBarcode: deviceBarcode,
-            deviceSerial: deviceSerial,
-            problem: problem,   
+    const handleReceive = async(repairRecord : any) => {
 
-        }
+        setReceiveCustomerName(repairRecord.customerName);
+        setReceiveId(repairRecord.id);
+        handleShowModal();
 
-        try {
-            await axios.post(`${config.apiUrl}/api/repairRecord/create`, payload);
-            Swal.fire({
-                icon: "success",
-                title: "บันทึกข้อมูล",
-                text: "บันทึกข้อมูลเรียบร้อย",
-                timer: 1000
-            });
-            handleCloseModal();
-        } catch (error : any) {
-            Swal.fire({
-                icon: "error",
-                title: "error",
-                text: error.message,
-            });
-        }
-    }
     
+
+    }
 
     return (
         <div className="content">
+
             <div className="contentInfo">
-                <div className="headerPage">บันทึกการซ่อม</div>
-                <button onClick={handleShowModal} className="linkActive mt-2">เพิ่มการซ่อม</button>
+ 
+                <div className="headerPage">รายการบันทึกการซ่อมจำนวน 0 รายการ</div>
+
+                <div className="mt-4  flex gap-5 text-center ">
+                    <Link href="/blackoffice/repair-record" className="linkActive">จัดการข้อมูล</Link>
+                    <Link href="/blackoffice/repair-record/add" className="linkNonActive">เพิ่มข้อมูล</Link>
+                </div>
+
+                <table className="table table-striped mt-6">
+                    <thead>
+                        <tr>
+                            <th>ชื่อลูกค้า</th>
+                            <th>เบอร์โทรศัพท์</th>
+                            <th>อุปกรณ์</th>
+                            <th>อาการ</th>
+                            <th>วันที่รับซ่อม</th>
+                            <th>วันที่ซ่อมเสร็จ</th>
+                            <th>สถานะ</th>
+                            <th>ค่าบริการ</th>
+                            <th>สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {repairRecords.map((repairRecord : any, index : number) =>(
+                            <tr key={repairRecord.id}>
+                                <td>{repairRecord.customerName}</td>
+                                <td>{repairRecord.customerPhone}</td>
+                                <td>{repairRecord.deviceName}</td>
+                                <td>{repairRecord.problem}</td>
+                                <td>{dayjs(repairRecord.createdAt).format("DD/MM/YYYY")}</td>
+                                <td>{repairRecord.endJobDate ? dayjs(repairRecord.endJobDate).format("DD/MM/YYYY") : '-'}</td>
+                                <td>{getStatusName(repairRecord.status)}</td>
+                                <td>{repairRecord.amount?.toLocaleString("th-TH")}</td>
+                                <td>
+                                    <div className="flex justify-center p-1.5">
+                                        <button onClick={() => handleReceive(repairRecord)} className="rounded-md  text-[12px] px-2 py-1 bg-green-500  text-white active:scale-95 transition-all duration-150">รับเครื่อง</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
 
             </div>
-
-            <Modal title="เพิ่มข้อมูลการซ่อม" isOpen={showModal} onClose={handleCloseModal}>
-                <div className="flex w-full gap-4">
-                     <div className="w-1/2">
-                        <div>ชื่อลูกค้า</div>
-                        <input type="text" className="modalInput" value={customerName}
-                            onChange={(e) => setCustomerName(e.target.value)}/>
-                     </div>
-                     <div className="w-1/2">
-                        <div>เบอร์โทรศัพท์</div>
-                        <input type="text" className="modalInput" value={customerPhone}
-                            onChange={(e) => setCustomerPhone(e.target.value)}/>
-                     </div>
+            
+            <Modal title="รับเครื่อง" isOpen={showModalReceive} onClose={handleCloseModal} size="lg">
+             
+                <div>ชื่อลูกค้า</div>
+                <input className="modalInput" value={receiveCustomerName} readOnly/>
+            
+                <div>ค่าบริการ</div>
+                <input className="modalInput" value={receiveAmount} onChange={(e) => setReceiveAmount(Number(e.target.value))}/>
+             
+                <div className="flex justify-center mt-4">
+                    <button className="btnsave">บันทึก</button>
                 </div>
 
-                <div>
-                    <div>ชื่ออุปกรณ์ในระบบ</div>
-                    <select className="modalInput" value={deviceId} onChange={(e) => handleDeviceChange(e.target.value)}>
-                        <option value="">--- เลือกอุปกรณ์ ---</option>
-                        {devices.map((device :any) =>(
-                            <option key={device.id} value={device.id}>
-                                {device.name}
-                            </option>
-                        ))}
-
-                    </select>
-
-                </div>
-
-                <div>
-                    <div>ชื่ออุปกรณ์นอกระบบ</div>     
-                </div>
-
-                <div className="flex w-full gap-4">
-                     <div className="w-1/2">
-                        <div>barcode</div>
-                        <input type="text" className="modalInput" value={deviceBarcode}
-                            onChange={(e) => setDeviceBarcode(e.target.value)}/>
-                     </div>
-                     <div className="w-1/2">
-                        <div>serial</div>
-                        <input type="text" className="modalInput" value={deviceSerial}
-                            onChange={(e) => setDeviceSerial(e.target.value)}/>
-                     </div>
-                </div>
-
-                <div>
-                    <div>วันหมดประกัน</div>
-                    <input type="date" className="modalInput" value={expairDate}
-                        onChange={(e) => setExpairDate(e.target.value)}/>
-                </div> 
-
-                <div>
-                    <div>อาการเสีย</div>
-                    <textarea className="modalInput" value={problem}
-                        onChange={(e) => setProblem(e.target.value)}></textarea>
-                </div>
-
-                <div className="flex justify-center">
-                    <button onClick={handleSave} className="btnsave">บันทึก</button>
-                </div>
             </Modal>
 
         </div>
+
     );
 }
