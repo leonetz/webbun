@@ -12,7 +12,7 @@ import exp from "constants";
 
 export default function Page() {
     const [devices, setDevices] = useState([]);
-    const [showModal, setShowModal] = useState(true);
+    const [showModal, setShowModal] = useState(false);
     const [name, setName] = useState("");
     const [barcode, setBarcode] = useState("");
     const [remark, setRemark] = useState("");
