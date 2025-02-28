@@ -18,6 +18,10 @@ export default function Page () {
     const [deviceBarcode, setDeviceBarcode] = useState("");
     const [deviceSerial, setDeviceSerial] = useState("");
     const [problem, setProblem] = useState("");
+<<<<<<< HEAD
+=======
+    const [solving, setSolving] = useState("");
+>>>>>>> 5ee31d5afe9bb1b3f005e2d27045be96a2ae98f2
     const [deviceId, setDeviceId] = useState("");
     const [expairDate, setExpairDate] = useState("");
 
@@ -64,7 +68,12 @@ export default function Page () {
             deviceName: deviceName,
             deviceBarcode: deviceBarcode,
             deviceSerial: deviceSerial,
+<<<<<<< HEAD
             problem: problem,   
+=======
+            expairDate: expairDate,
+            problem: problem,
+>>>>>>> 5ee31d5afe9bb1b3f005e2d27045be96a2ae98f2
         }
 
         try {
@@ -123,8 +132,12 @@ export default function Page () {
                 </div>
 
                 <div>
+<<<<<<< HEAD
                     <div>ชื่ออุปกรณ์นอกระบบ</div>
                     <input type="text" className="modalInput"/>     
+=======
+                    <div>ชื่ออุปกรณ์นอกระบบ</div>     
+>>>>>>> 5ee31d5afe9bb1b3f005e2d27045be96a2ae98f2
                 </div>
 
                 <div className="flex w-full gap-4">
