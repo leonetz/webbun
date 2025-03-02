@@ -14,14 +14,14 @@ export default function Page () {
     const [devices, setDevices] = useState([]);
 
     //รับเครื่อง
-    const [showModalReceive, setModalReceive] = useState(true);
+    const [showModalReceive, setModalReceive] = useState(false);
     const [receiveCustomerName, setReceiveCustomerName] = useState("");
     const [receiveAmount, setReceiveAmount] = useState(0);
     const [receiveId, setReceiveId] = useState("");
 
     const fetchDevices = async () => {
         const response = await axios.get(`${config.apiUrl}/api/device/list`);
-        setDevices(response.data);
+        setDevices(response.data); 
     }
 
     const fetchRepairRecords = async () => {
@@ -29,11 +29,11 @@ export default function Page () {
         setRepairRecords(response.data);
     }
 
-    const handleCloseModal = () => {
+    const handleCloseReceive = () => {
         setModalReceive(false);
     }
 
-    const handleShowModal = () => {
+    const handleShowReceive = () => {
         setModalReceive(true)
     }
 
@@ -63,13 +63,45 @@ export default function Page () {
     }
 
     const handleReceive = async(repairRecord : any) => {
-
         setReceiveCustomerName(repairRecord.customerName);
         setReceiveId(repairRecord.id);
-        handleShowModal();
+        handleShowReceive();
+    }
 
+    const savehandleReceive = async () => {
+        try {
+            const payload = {
+                id : receiveId,
+                amoun : receiveAmount,
+            }
+
+            const result = await Swal.fire({
+                icon : "question",
+                text : "คุณต้องการรับเครื่องหรือไม่",
+                confirmButtonText : "ยืนยีน",
+                cancelButtonText : "ยกเลิก",
+                showCancelButton : true,
+            })
     
+            if (result.isConfirmed) {
+                await axios.put(`${config.apiUrl}/api/repairRecord/receive`, payload);
+                Swal.fire({
+                    icon: "success",
+                    title: "บันทึกข้อมูลสำเร็จ"
+                });
 
+                fetchRepairRecords();
+                handleCloseReceive();
+    
+            }
+            
+        } catch (error : any) {
+            Swal.fire({
+                icon : "error",
+                title : "เกิดข้อผิดพลาด",
+                text : error.message,
+            });
+        }
     }
 
     return (
@@ -110,8 +142,10 @@ export default function Page () {
                                 <td>{getStatusName(repairRecord.status)}</td>
                                 <td>{repairRecord.amount?.toLocaleString("th-TH")}</td>
                                 <td>
-                                    <div className="flex justify-center p-1.5">
+                                    <div className="flex justify-center p-1.5 gap-2">
                                         <button onClick={() => handleReceive(repairRecord)} className="rounded-md  text-[12px] px-2 py-1 bg-green-500  text-white active:scale-95 transition-all duration-150">รับเครื่อง</button>
+                                        <button onClick={() => handleReceive(repairRecord)} className="rounded-md  text-[12px] px-2 py-1 bg-yellow-400 active:scale-95 transition-all duration-150">แก้ไข</button>
+                                        <button onClick={() => handleReceive(repairRecord)} className="rounded-md  text-[12px] px-2 py-1 bg-red-500 text-white active:scale-95 transition-all duration-150">ลบ</button>
                                     </div>
                                 </td>
                             </tr>
@@ -120,8 +154,8 @@ export default function Page () {
                 </table>
 
             </div>
-            
-            <Modal title="รับเครื่อง" isOpen={showModalReceive} onClose={handleCloseModal} size="lg">
+
+            <Modal title="รับเครื่อง" isOpen={showModalReceive} onClose={handleCloseReceive} size="lg">
              
                 <div>ชื่อลูกค้า</div>
                 <input className="modalInput" value={receiveCustomerName} readOnly/>
@@ -130,7 +164,7 @@ export default function Page () {
                 <input className="modalInput" value={receiveAmount} onChange={(e) => setReceiveAmount(Number(e.target.value))}/>
              
                 <div className="flex justify-center mt-4">
-                    <button className="btnsave">บันทึก</button>
+                    <button onClick={savehandleReceive} className="btnsave">บันทึก</button>
                 </div>
 
             </Modal>
