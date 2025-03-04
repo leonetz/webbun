@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import config from "@/app/config";
 import axios from "axios";
 import Swal from "sweetalert2";
-import Modal from "@/app/components/modal";
-import dayjs from "dayjs";
 import Link from "next/link";
 
 export default function Page () {
@@ -20,8 +18,6 @@ export default function Page () {
     const [problem, setProblem] = useState("");
     const [expairDate, setExpairDate] = useState("");
 
-
-    
 
 
     const handleSave = async () => {
@@ -48,7 +44,7 @@ export default function Page () {
                 await axios.post(`${config.apiUrl}/api/repairRecord/create`, payload);
                 Swal.fire({
                     icon : "success",
-                    title: "บันทึกข้อมูลสำเร็จ"
+                    text: "บันทึกข้อมูลสำเร็จ"
                 })
 
                 setCustomerName("");

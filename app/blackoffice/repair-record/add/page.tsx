@@ -71,7 +71,7 @@ export default function Page () {
                 await axios.post(`${config.apiUrl}/api/repairRecord/create`, payload);
                 Swal.fire({
                     icon : "success",
-                    title: "บันทึกข้อมูลสำเร็จ"
+                    text: "บันทึกข้อมูลสำเร็จ"
                 })
 
                 setCustomerName("");

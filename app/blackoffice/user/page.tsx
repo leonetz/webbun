@@ -99,8 +99,18 @@ export default function Page() {
 
             if (id == '') {
                 await axios.post(`${config.apiUrl}/api/user/create`, payload);
+                Swal.fire({
+                    icon: "success",
+                    title: "บันข้อมูลสำเร็จ!",
+                });
+                setShowModal(false);
             } else {
                 await axios.put(`${config.apiUrl}/api/user/updateUser/${id}`, payload);
+                Swal.fire({
+                    icon: "success",
+                    title: "บันข้อมูลสำเร็จ!",
+                });
+                setShowModal(false);
             }
 
             fetchUsers();

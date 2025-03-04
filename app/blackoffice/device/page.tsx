@@ -85,7 +85,8 @@ export default function Page() {
                                 <td>{device.name}</td>
                                 <td>{device.barcode}</td>
                                 <td>{device.remark}</td>
-                                <td>{device.expireDate}</td>
+                                <td>{dayjs(device.expireDate).format("DD/MM/YYYY")}</td>
+
                                 <td className="w-44">
                                     <div className="flex items-center justify-center gap-2 p-2 w-full h-full">
                                         <button onClick= {() => handleEdit(device)} className="rounded-md w-14 text-[12px] px-2 py-1 bg-yellow-400 active:scale-95 transition-all duration-150">
